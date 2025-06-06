@@ -49,7 +49,7 @@ git clone https://github.com/Matp1/erp-nexdom.git
 cd backend
 
 # Rode a aplicação
-./mvnw spring-boot:run
+./mvn spring-boot:run
 
 # Acesse a pasta do frontend
 cd frontend
@@ -58,16 +58,7 @@ cd frontend
 npm install
 
 # Rode a aplicação
-npm run dev
-
-# Acesse a pasta do frontend
-cd frontend
-
-# Instale as dependências
-npm install
-
-# Rode a aplicação
-npm run dev
+npm run serve
 
 
 ### 🔗 Rotas da API
