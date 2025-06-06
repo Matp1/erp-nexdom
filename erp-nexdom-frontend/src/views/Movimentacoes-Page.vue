@@ -15,7 +15,8 @@
               :key="produto.codigo"
               :value="produto.codigo"
             >
-              {{ produto.descricao }}
+              {{ produto.name }}
+              <!-- Alterado de descricao para name -->
             </option>
           </select>
         </div>
@@ -47,6 +48,7 @@
             type="number"
             v-model.number="movimentacao.valorVenda"
             step="0.01"
+            required
           />
         </div>
 
@@ -61,7 +63,8 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Produto ID</th>
+            <th>Produto</th>
+            <!-- Alterado de Produto ID para Produto -->
             <th>Tipo</th>
             <th>Quantidade</th>
             <th>Data</th>
@@ -71,10 +74,14 @@
         <tbody>
           <tr v-for="mov in movimentacoes" :key="mov.id">
             <td>{{ mov.id }}</td>
-            <td>{{ mov.produtoId }}</td>
+            <td>
+              {{ getProdutoName(mov.produtoId) }}
+              <!-- Exibe o name do produto -->
+            </td>
             <td>{{ mov.tipoMovimentacao }}</td>
             <td>{{ mov.quantidadeMovimentada }}</td>
-            <td>{{ mov.dataVenda }}</td>
+            <td>{{ formatarData(mov.dataVenda) }}</td>
+            <!-- Usando função formatarData -->
             <td>{{ mov.valorVenda }}</td>
           </tr>
         </tbody>
@@ -117,6 +124,19 @@ const carregarProdutos = async () => {
   }
 };
 
+// Função para obter o name do produto pelo produtoId
+function getProdutoName(produtoId) {
+  const produto = produtos.value.find((p) => p.codigo === produtoId);
+  return produto ? produto.name : "Produto não encontrado";
+}
+
+// Função para formatar a data (descomentada e ajustada)
+function formatarData(dataISO) {
+  if (!dataISO) return "-";
+  const data = new Date(dataISO);
+  return data.toLocaleDateString("pt-BR");
+}
+
 async function registrarMovimentacao() {
   try {
     if (movimentacao.value.tipoMovimentacao === "ENTRADA") {
@@ -127,21 +147,26 @@ async function registrarMovimentacao() {
     } else if (movimentacao.value.tipoMovimentacao === "SAIDA") {
       await api.reduzirEstoque(movimentacao.value.produtoId, {
         quantidade: movimentacao.value.quantidade,
-        valorVenda: movimentacao.value.valorVenda,
+        valorVenda: movimentacao.value.valorVenda || 0,
       });
     }
     alert("Movimentação registrada com sucesso!");
+    // Reseta o formulário
+    movimentacao.value = {
+      produtoId: "",
+      tipoMovimentacao: "",
+      quantidade: null,
+      valorVenda: null,
+    };
     carregarMovimentacoes();
   } catch (error) {
     console.error("Erro ao registrar movimentação:", error);
-    alert("Erro ao registrar movimentação.");
+    // Exibe a mensagem de erro específica do backend
+    const mensagemErro =
+      error.response?.data || "Erro ao registrar movimentação.";
+    alert(mensagemErro);
   }
 }
-
-/*const formatarData = (dataISO) => {
-  const data = new Date(dataISO);
-  return data.toLocaleDateString();
-};*/
 
 onMounted(() => {
   carregarMovimentacoes();

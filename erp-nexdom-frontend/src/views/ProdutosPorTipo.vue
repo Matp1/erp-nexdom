@@ -20,7 +20,10 @@
             <th>Código</th>
             <th>Nome</th>
             <th>Descrição</th>
-            <th>Estoque</th>
+            <th>Quantidade Disponível</th>
+            <!-- Alterado de Estoque para refletir o campo -->
+            <th>Quantidade Saída</th>
+            <!-- Adicionado conforme o desafio -->
             <th>Valor Fornecedor</th>
           </tr>
         </thead>
@@ -29,7 +32,10 @@
             <td>{{ produto.codigo }}</td>
             <td>{{ produto.name }}</td>
             <td>{{ produto.descricao }}</td>
-            <td>{{ produto.quantidadeEstoque }}</td>
+            <td>{{ produto.quantidadeDisponivel || 0 }}</td>
+            <!-- Corrigido de quantidadeEstoque para quantidadeDisponivel -->
+            <td>{{ produto.quantidadeSaida || 0 }}</td>
+            <!-- Adicionado -->
             <td>
               R$
               {{

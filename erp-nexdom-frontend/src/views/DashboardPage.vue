@@ -27,7 +27,7 @@
         <thead>
           <tr>
             <th>Código</th>
-            <th>Descrição</th>
+            <th>Nome</th>
             <th>Tipo</th>
             <th>Estoque</th>
           </tr>
@@ -35,7 +35,7 @@
         <tbody>
           <tr v-for="produto in produtos" :key="produto.codigo">
             <td>{{ produto.codigo }}</td>
-            <td>{{ produto.descricao }}</td>
+            <td>{{ produto.name }}</td>
             <td>{{ produto.tipoProduto }}</td>
             <td>{{ produto.quantidadeEstoque }}</td>
           </tr>

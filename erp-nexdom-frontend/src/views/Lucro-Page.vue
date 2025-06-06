@@ -15,19 +15,25 @@
         <thead>
           <tr>
             <th>Código</th>
-            <th>Descrição</th>
+            <th>Nome</th>
+            <!-- Mantido: Alterado de Descrição para Nome -->
             <th>Categoria</th>
             <th>Estoque</th>
             <th>Valor Fornecedor</th>
+            <th>Quantidade Vendida</th>
+            <th>Lucro</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="produto in produtos" :key="produto.codigo">
             <td>{{ produto.codigo }}</td>
-            <td>{{ produto.descricao }}</td>
+            <td>{{ produto.name }}</td>
+            <!-- Mantido: Alterado de descricao para name -->
             <td>{{ produto.tipoProduto }}</td>
             <td>{{ produto.quantidadeEstoque }}</td>
             <td>R$ {{ produto.valorFornecedor.toFixed(2) }}</td>
+            <td>{{ produto.lucro?.quantidadeTotalSaida || 0 }}</td>
+            <td>R$ {{ produto.lucro?.lucroTotal.toFixed(2) || "0.00" }}</td>
           </tr>
         </tbody>
       </table>
@@ -54,7 +60,29 @@ const carregarLucroTotal = async () => {
 const carregarProdutos = async () => {
   try {
     const response = await api.getProdutos();
-    produtos.value = response.data;
+    // Para cada produto, carrega apenas os dados de lucro
+    produtos.value = await Promise.all(
+      response.data.map(async (produto) => {
+        try {
+          // Carrega lucro do produto
+          const lucroResponse = await api.getLucroPorProduto(produto.codigo);
+          const lucro = lucroResponse.data;
+          return {
+            ...produto,
+            lucro, // Adiciona lucro (lucroTotal, quantidadeTotalSaida)
+          };
+        } catch (error) {
+          console.error(
+            `Erro ao carregar lucro do produto ${produto.codigo}:`,
+            error
+          );
+          return {
+            ...produto,
+            lucro: { lucroTotal: 0, quantidadeTotalSaida: 0 },
+          };
+        }
+      })
+    );
   } catch (error) {
     console.error("Erro ao carregar produtos:", error);
   }
